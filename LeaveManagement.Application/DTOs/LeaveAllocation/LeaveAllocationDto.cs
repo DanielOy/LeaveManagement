@@ -1,11 +1,7 @@
 ﻿using LeaveManagement.Application.DTOs.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using LeaveManagement.Application.DTOs.LeaveType;
 
-namespace LeaveManagement.Application.DTOs
+namespace LeaveManagement.Application.DTOs.LeaveAllocation
 {
     public class LeaveAllocationDto:BaseDto
     {
