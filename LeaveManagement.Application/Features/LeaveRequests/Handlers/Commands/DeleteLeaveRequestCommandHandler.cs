@@ -1,11 +1,10 @@
-﻿using AutoMapper;
-using LeaveManagement.Application.Features.LeaveRequests.Requests.Commands;
+﻿using LeaveManagement.Application.Features.LeaveRequests.Requests.Commands;
 using LeaveManagement.Application.Persitence.Contract;
 using MediatR;
 
 namespace LeaveManagement.Application.Features.LeaveRequests.Handlers.Commands
 {
-    public class DeleteLeaveRequestCommandHandler:IRequestHandler<DeleteLeaveRequestCommand,Unit>
+    public class DeleteLeaveRequestCommandHandler : IRequestHandler<DeleteLeaveRequestCommand, Unit>
     {
         private readonly ILeaveRequestRepository _leaveRequestRepository;
 

@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using LeaveManagement.Application.Features.LeaveTypes.Requests.Commands;
+﻿using LeaveManagement.Application.Features.LeaveTypes.Requests.Commands;
 using LeaveManagement.Application.Persitence.Contract;
 using MediatR;
 
@@ -20,7 +19,7 @@ namespace LeaveManagement.Application.Features.LeaveTypes.Handlers.Commands
 
             await _leaveTypeRepository.Delete(leaveType);
 
-            return Unit.Value;  
+            return Unit.Value;
         }
     }
 }

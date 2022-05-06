@@ -24,7 +24,7 @@ namespace LeaveManagement.Application.Features.LeaveAllocations.Handlers.Command
 
             await _leaveAllocationRepository.Update(leaveAllocation);
 
-            return Unit.Value;  
+            return Unit.Value;
         }
     }
 }

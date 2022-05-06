@@ -31,7 +31,7 @@ namespace LeaveManagement.Application.Features.LeaveRequests.Handlers.Commands
             {
                 var leaveRequest = await _leaveRequestRepository.Get(request.ChangeLeaveRequestApprovalDto.Id);
 
-                await _leaveRequestRepository.ChangeApprovalStatus(leaveRequest,request.ChangeLeaveRequestApprovalDto.Approved);
+                await _leaveRequestRepository.ChangeApprovalStatus(leaveRequest, request.ChangeLeaveRequestApprovalDto.Approved);
             }
 
             return Unit.Value;

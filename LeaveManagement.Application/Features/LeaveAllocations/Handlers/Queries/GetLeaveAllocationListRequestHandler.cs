@@ -6,7 +6,7 @@ using MediatR;
 
 namespace LeaveManagement.Application.Features.LeaveAllocations.Handlers.Queries
 {
-    public class GetLeaveAllocationListRequestHandler:IRequestHandler<GetLeaveAllocationListRequest,List<LeaveAllocationDto>>
+    public class GetLeaveAllocationListRequestHandler : IRequestHandler<GetLeaveAllocationListRequest, List<LeaveAllocationDto>>
     {
         private readonly ILeaveAllocationRepository _leaveAllocationRepository;
         private readonly IMapper _mapper;

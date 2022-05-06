@@ -3,7 +3,7 @@ using LeaveManagement.Application.DTOs.LeaveType;
 
 namespace LeaveManagement.Application.DTOs.LeaveRequest
 {
-    public class LeaveRequestDto : BaseDto
+    public class LeaveRequestDto : BaseDto, IBasicLeaveRequestDto
     {
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
