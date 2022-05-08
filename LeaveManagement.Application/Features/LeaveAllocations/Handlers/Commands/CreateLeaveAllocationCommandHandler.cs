@@ -2,7 +2,7 @@
 using LeaveManagement.Application.DTOs.LeaveAllocation.Validators;
 using LeaveManagement.Application.Exceptions;
 using LeaveManagement.Application.Features.LeaveAllocations.Requests.Commands;
-using LeaveManagement.Application.Persitence.Contract;
+using LeaveManagement.Application.Contracts.Persitence;
 using LeaveManagement.Domain;
 using MediatR;
 
@@ -22,7 +22,7 @@ namespace LeaveManagement.Application.Features.LeaveAllocations.Handlers.Command
         public async Task<int> Handle(CreateLeaveAllocationCommand request, CancellationToken cancellationToken)
         {
             var validator = new CreateLeaveAllocationDtoValidator(_leaveAllocationRepository);
-            var validationResult = await validator.ValidateAsync(request.CreateLeaveAllocationDto);
+            var validationResult = await validator.ValidateAsync(request.CreateLeaveAllocationDto, cancellationToken);
 
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult);
@@ -31,7 +31,7 @@ namespace LeaveManagement.Application.Features.LeaveAllocations.Handlers.Command
 
             leaveAllocation = await _leaveAllocationRepository.Add(leaveAllocation);
 
-            return leaveAllocation.Id;
+            return leaveAllocation.Id; 
         }
     }
 }
