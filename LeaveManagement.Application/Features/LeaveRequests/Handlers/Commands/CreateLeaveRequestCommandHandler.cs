@@ -34,6 +34,7 @@ namespace LeaveManagement.Application.Features.LeaveRequests.Handlers.Commands
                 response.Success = false;
                 response.Message = "";
                 response.Errors = validationResult.Errors.Select(x => x.ErrorMessage);
+                return response;
             }
 
             var leaveRequest = _mapper.Map<LeaveRequest>(request.CreateLeaveRequestDto);
@@ -56,10 +57,7 @@ namespace LeaveManagement.Application.Features.LeaveRequests.Handlers.Commands
             {
                 await _emailSender.SendEmail(email);
             }
-            catch (Exception ex)
-            {
-
-            }
+            catch { }
 
 
             return response;

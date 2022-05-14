@@ -5,11 +5,11 @@ namespace LeaveManagement.Application.DTOs.LeaveAllocation.Validators
 {
     public class ILeaveAllocationDtoValidator : AbstractValidator<ILeaveAllocationDto>
     {
-        private readonly ILeaveAllocationRepository _leaveAllocationRepository;
+        private readonly ILeaveTypeRepository _leaveTypeRepository;
 
-        public ILeaveAllocationDtoValidator(ILeaveAllocationRepository leaveAllocationRepository)
+        public ILeaveAllocationDtoValidator(ILeaveTypeRepository leaveTypeRepository)
         {
-            _leaveAllocationRepository = leaveAllocationRepository;
+            _leaveTypeRepository = leaveTypeRepository;
 
             RuleFor(p => p.NumberOfDays)
                 .NotEmpty().WithMessage("{PropertyName} is required")
@@ -23,7 +23,7 @@ namespace LeaveManagement.Application.DTOs.LeaveAllocation.Validators
                 .GreaterThan(0)
                 .MustAsync(async (id, token) =>
                 {
-                    return await _leaveAllocationRepository.Exists(id);
+                    return await _leaveTypeRepository.Exists(id);
                 }).WithMessage("{PropertyName} doesn't exist");
         }
     }

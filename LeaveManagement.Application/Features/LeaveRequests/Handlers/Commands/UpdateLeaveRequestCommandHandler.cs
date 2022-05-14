@@ -41,6 +41,10 @@ namespace LeaveManagement.Application.Features.LeaveRequests.Handlers.Commands
 
                 await _leaveRequestRepository.ChangeApprovalStatus(leaveRequest, request.ChangeLeaveRequestApprovalDto.Approved);
             }
+            else
+            {
+                throw new ApplicationException($"Value required {nameof(request.LeaveRequestDto)} or {nameof(request.ChangeLeaveRequestApprovalDto)}");
+            }
 
             return Unit.Value;
         }

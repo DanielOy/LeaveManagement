@@ -20,7 +20,7 @@ namespace LeaveManagement.Application.Features.LeaveTypes.Handlers.Commands
             var leaveType = await _leaveTypeRepository.Get(request.Id);
 
             if (leaveType is null)
-                throw new NotFoundException(nameof(LeaveType), request.Id);
+                throw new ApplicationException(nameof(LeaveType), new NotFoundException(nameof(leaveType), request.Id));
 
             await _leaveTypeRepository.Delete(leaveType);
 
