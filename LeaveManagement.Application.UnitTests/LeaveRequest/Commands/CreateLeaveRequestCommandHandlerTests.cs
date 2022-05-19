@@ -58,7 +58,7 @@ namespace LeaveManagement.Application.UnitTests.LeaveRequests.Commands
             var LeaveRequests = await _mockRepo.Object.GetAll();
 
             //Assert
-            result.ShouldNotBeNull();
+            result.ShouldBeOfType<int>();
             LeaveRequests.Count().ShouldBe(3);
         }
 
@@ -77,11 +77,13 @@ namespace LeaveManagement.Application.UnitTests.LeaveRequests.Commands
             };
 
             //Act
-            var response = await handler.Handle(request, CancellationToken.None);
+            var exception = await Should.ThrowAsync<ValidationException>(async () =>
+            {
+                await handler.Handle(request, CancellationToken.None);
+            });
 
             //Assert
-            response.ShouldNotBeNull();
-            response.Success.ShouldBeFalse();   
+            exception.ShouldNotBeNull();
 
             var LeaveRequests = await _mockRepo.Object.GetAll();
             LeaveRequests.Count().ShouldBe(2);

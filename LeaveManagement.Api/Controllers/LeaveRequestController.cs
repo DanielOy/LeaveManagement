@@ -39,7 +39,7 @@ namespace LeaveManagement.Api.Controllers
 
         // POST api/<LeaveRequestController>
         [HttpPost]
-        public async Task<ActionResult> Post([FromBody] CreateLeaveRequestDto leaveRequest)
+        public async Task<ActionResult<int>> Post([FromBody] CreateLeaveRequestDto leaveRequest)
         {
             var command = new CreateLeaveRequestCommand() { CreateLeaveRequestDto = leaveRequest };
             var response = await _mediator.Send(command);
@@ -48,7 +48,7 @@ namespace LeaveManagement.Api.Controllers
 
         // PUT api/<LeaveRequestController>
         [HttpPut("{id}")]
-        public async Task<ActionResult> Put([FromBody] UpdateLeaveRequestDto leaveRequest)
+        public async Task<ActionResult<int>> Put([FromBody] UpdateLeaveRequestDto leaveRequest)
         {
             var command = new UpdateLeaveRequestCommand() { LeaveRequestDto = leaveRequest };
             await _mediator.Send(command);
@@ -66,7 +66,7 @@ namespace LeaveManagement.Api.Controllers
 
         // DELETE api/<LeaveRequestController>/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(int id)
+        public async Task<ActionResult<int>> Delete(int id)
         {
             var command = new DeleteLeaveRequestCommand() { Id = id };
             await _mediator.Send(command);

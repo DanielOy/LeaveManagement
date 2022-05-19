@@ -7,10 +7,11 @@ using LeaveManagement.Domain;
 using MediatR;
 using LeaveManagement.Application.Contracts.Infrastructure;
 using LeaveManagement.Application.Models;
+using LeaveManagement.Application.Exceptions;
 
 namespace LeaveManagement.Application.Features.LeaveRequests.Handlers.Commands
 {
-    public class CreateLeaveRequestCommandHandler : IRequestHandler<CreateLeaveRequestCommand, BaseCommandResponse>
+    public class CreateLeaveRequestCommandHandler : IRequestHandler<CreateLeaveRequestCommand, int>
     {
         private readonly ILeaveRequestRepository _leaveRequestRepository;
         private readonly IMapper _mapper;
@@ -23,27 +24,17 @@ namespace LeaveManagement.Application.Features.LeaveRequests.Handlers.Commands
             _emailSender = emailSender;
         }
 
-        public async Task<BaseCommandResponse> Handle(CreateLeaveRequestCommand request, CancellationToken cancellationToken)
+        public async Task<int> Handle(CreateLeaveRequestCommand request, CancellationToken cancellationToken)
         {
-            var response = new BaseCommandResponse();
             var validator = new CreateLeaveRequestDtoValidator(_leaveRequestRepository);
             var validationResult = await validator.ValidateAsync(request.CreateLeaveRequestDto, cancellationToken);
 
             if (!validationResult.IsValid)
-            {
-                response.Success = false;
-                response.Message = "";
-                response.Errors = validationResult.Errors.Select(x => x.ErrorMessage);
-                return response;
-            }
+                throw new ValidationException(validationResult);
 
             var leaveRequest = _mapper.Map<LeaveRequest>(request.CreateLeaveRequestDto);
 
             leaveRequest = await _leaveRequestRepository.Add(leaveRequest);
-
-            response.Success = true;
-            response.Message = "Creation Succesful";
-            response.Id = leaveRequest.Id;
 
             var email = new Email
             {
@@ -60,7 +51,7 @@ namespace LeaveManagement.Application.Features.LeaveRequests.Handlers.Commands
             catch { }
 
 
-            return response;
+            return leaveRequest.Id;
         }
     }
 }
