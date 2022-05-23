@@ -12,7 +12,7 @@ namespace LeaveManagement.Persistence
         {
             services.AddDbContext<LeaveManagementDbContext>(options =>
                 options.UseSqlServer(
-                    configuration.GetConnectionString("LeaveManagmentConnectionString")));
+                    configuration.GetConnectionString("LeaveManagementConnectionString")));
 
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 

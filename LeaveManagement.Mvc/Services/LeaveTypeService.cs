@@ -26,6 +26,7 @@ namespace LeaveManagement.Mvc.Services
             try
             {
                 var createLeaveTypeDto = _mapper.Map<CreateLeaveTypeDto>(leaveType);
+                AddBearerToken();
                 await _client.LeaveTypesPOSTAsync(createLeaveTypeDto);
 
                 return new Response<int>() { Success = true };
@@ -40,6 +41,7 @@ namespace LeaveManagement.Mvc.Services
         {
             try
             {
+                AddBearerToken();
                 await _client.LeaveTypesDELETEAsync(id);
                 return new Response<int>() { Success = true };
             }
@@ -51,12 +53,14 @@ namespace LeaveManagement.Mvc.Services
 
         public async Task<LeaveTypeVM> GetLeaveTypeDetails(int id)
         {
+            AddBearerToken();
             var leaveType = await _client.LeaveTypesGETAsync(id);
             return _mapper.Map<LeaveTypeVM>(leaveType);
         }
 
         public async Task<List<LeaveTypeVM>> GetLeaveTypes()
         {
+            AddBearerToken();
             var leaveTypes = await _client.LeaveTypesAllAsync();
             return _mapper.Map<List<LeaveTypeVM>>(leaveTypes);
         }
@@ -66,6 +70,7 @@ namespace LeaveManagement.Mvc.Services
             try
             {
                 var leaveTypeDto = _mapper.Map<LeaveTypeDto>(leaveType);
+                AddBearerToken();
                 await _client.LeaveTypesPUTAsync(leaveType.Id.ToString(), leaveTypeDto);
                 return new Response<int>() { Success = true };
             }
