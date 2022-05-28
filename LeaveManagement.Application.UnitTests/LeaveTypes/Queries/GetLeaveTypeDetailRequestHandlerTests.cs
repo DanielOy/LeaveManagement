@@ -16,11 +16,11 @@ namespace LeaveManagement.Application.UnitTests.LeaveTypes.Queries
     public class GetLeaveTypeDetailRequestHandlerTests
     {
         private readonly IMapper _mapper;
-        private readonly Mock<ILeaveTypeRepository> _mockRepo;
+        private readonly Mock<IUnitOfWork> _mockUnitOfWork;
 
         public GetLeaveTypeDetailRequestHandlerTests()
         {
-            _mockRepo = MockLeaveTypeRepository.GetLeaveTypeRepository();
+            _mockUnitOfWork = MockUnitOfWork.GetUnitOfWork();
 
             var mapperConfig = new MapperConfiguration(c =>
             {
@@ -34,7 +34,7 @@ namespace LeaveManagement.Application.UnitTests.LeaveTypes.Queries
         public async Task GetLeaveTypeDetailTest()
         {
             //Arrange
-            var handler = new GetLeaveTypeDetailRequestHandler(_mockRepo.Object, _mapper);
+            var handler = new GetLeaveTypeDetailRequestHandler(_mapper, _mockUnitOfWork.Object);
             var request = new GetLeaveTypeDetailRequest() { Id = 1 };
 
             //Act

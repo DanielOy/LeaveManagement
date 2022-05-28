@@ -16,31 +16,33 @@ namespace LeaveManagement.Application.Features.LeaveRequests.Handlers.Commands
 {
     public class CreateLeaveRequestCommandHandler : IRequestHandler<CreateLeaveRequestCommand, int>
     {
-        private readonly ILeaveRequestRepository _leaveRequestRepository;
         private readonly IMapper _mapper;
         private readonly IEmailSender _emailSender;
         private readonly IHttpContextAccessor _httpContext;
-        private readonly ILeaveAllocationRepository _leaveAllocationRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public CreateLeaveRequestCommandHandler(ILeaveRequestRepository leaveRequestRepository, IMapper mapper, IEmailSender emailSender, IHttpContextAccessor httpContext, ILeaveAllocationRepository leaveAllocationRepository)
+        public CreateLeaveRequestCommandHandler(IMapper mapper, IEmailSender emailSender, IHttpContextAccessor httpContext,  IUnitOfWork unitOfWork)
         {
-            _leaveRequestRepository = leaveRequestRepository;
             _mapper = mapper;
             _emailSender = emailSender;
             _httpContext = httpContext;
-            _leaveAllocationRepository = leaveAllocationRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<int> Handle(CreateLeaveRequestCommand request, CancellationToken cancellationToken)
         {
-            var validator = new CreateLeaveRequestDtoValidator(_leaveRequestRepository);
+            var validator = new CreateLeaveRequestDtoValidator(_unitOfWork.LeaveRequestRepository);
             var validationResult = await validator.ValidateAsync(request.CreateLeaveRequestDto, cancellationToken);
 
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult);
 
             var userId = _httpContext.HttpContext.User.Claims.FirstOrDefault(q => q.Type == CustomClaimTypes.Uid)?.Value;
-            var allocation = await _leaveAllocationRepository.GetUserAllocations(userId, request.CreateLeaveRequestDto.LeaveTypeId);
+            var allocation = await _unitOfWork.LeaveAllocationRepository.GetUserAllocations(userId, request.CreateLeaveRequestDto.LeaveTypeId);
+
+            if (allocation == null)
+                throw new Exception("You don't have any allocations for this leave type.");
+
             int daysRequested = (int)(request.CreateLeaveRequestDto.EndDate - request.CreateLeaveRequestDto.StartDate).TotalDays;
 
             if (daysRequested > allocation.NumberOfDays)
@@ -48,7 +50,9 @@ namespace LeaveManagement.Application.Features.LeaveRequests.Handlers.Commands
 
             var leaveRequest = _mapper.Map<LeaveRequest>(request.CreateLeaveRequestDto);
             leaveRequest.RequestingEmployeeId = userId;
-            leaveRequest = await _leaveRequestRepository.Add(leaveRequest);
+            leaveRequest = await _unitOfWork.LeaveRequestRepository.Add(leaveRequest);
+
+            await _unitOfWork.Save();
 
             var emailAddress = _httpContext.HttpContext.User.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Email).Value;
 

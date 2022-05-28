@@ -10,20 +10,20 @@ namespace LeaveManagement.Application.Features.LeaveRequests.Handlers.Queries
 {
     public class GetLeaveRequestDetailRequestHandler : IRequestHandler<GetLeaveRequestDetailRequest, LeaveRequestDto>
     {
-        private readonly ILeaveRequestRepository _leaveRequestRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IUserService _userService;
 
-        public GetLeaveRequestDetailRequestHandler(ILeaveRequestRepository leaveRequestRepository, IMapper mapper, IUserService userService)
+        public GetLeaveRequestDetailRequestHandler(IMapper mapper, IUserService userService, IUnitOfWork unitOfWork)
         {
-            _leaveRequestRepository = leaveRequestRepository;
             _mapper = mapper;
             _userService = userService;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<LeaveRequestDto> Handle(GetLeaveRequestDetailRequest request, CancellationToken cancellationToken)
         {
-            var leaveRequest = await _leaveRequestRepository.Get(request.Id);
+            var leaveRequest = await _unitOfWork.LeaveRequestRepository.Get(request.Id);
             var leaveRequestDto = _mapper.Map<LeaveRequestDto>(leaveRequest);
             leaveRequestDto.Employee =await _userService.GetEmployee(leaveRequest.RequestingEmployeeId);
 

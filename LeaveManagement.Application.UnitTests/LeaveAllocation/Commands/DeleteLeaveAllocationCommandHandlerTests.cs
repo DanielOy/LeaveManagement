@@ -16,11 +16,11 @@ namespace LeaveManagement.Application.UnitTests.LeaveAllocation.Commands
 {
     public class DeleteLeaveAllocationCommandHandlerTests
     {
-        private readonly Mock<ILeaveAllocationRepository> _mockRepoAllocation;
+        private readonly Mock<IUnitOfWork> _mockUnitOfWork;
 
         public DeleteLeaveAllocationCommandHandlerTests()
         {
-            _mockRepoAllocation = MockLeaveAllocationRepository.GetLeaveAllocationRepository();
+            _mockUnitOfWork = MockUnitOfWork.GetUnitOfWork();
 
             var mapperConfig = new MapperConfiguration(c =>
             {
@@ -32,13 +32,13 @@ namespace LeaveManagement.Application.UnitTests.LeaveAllocation.Commands
         public async Task Valid_LeaveAllocation_Deleted()
         {
             //Arrange
-            var handler = new DeleteLeaveAllocationCommandHandler(_mockRepoAllocation.Object);
+            var handler = new DeleteLeaveAllocationCommandHandler(_mockUnitOfWork.Object);
             var request = new DeleteLeaveAllocationCommand() { Id = 1 };
 
             //Act
             var result = await handler.Handle(request, CancellationToken.None);
 
-            var LeaveAllocations = await _mockRepoAllocation.Object.GetAll();
+            var LeaveAllocations = await _mockUnitOfWork.Object.LeaveAllocationRepository.GetAll();
 
             //Assert
             LeaveAllocations.Count().ShouldBe(1);
@@ -48,7 +48,7 @@ namespace LeaveManagement.Application.UnitTests.LeaveAllocation.Commands
         public async Task Invalid_LeaveAllocation_Deleted()
         {
             //Arrange
-            var handler = new DeleteLeaveAllocationCommandHandler(_mockRepoAllocation.Object);
+            var handler = new DeleteLeaveAllocationCommandHandler(_mockUnitOfWork.Object);
             var request = new DeleteLeaveAllocationCommand() { Id = 3 };
 
             //Act
@@ -61,7 +61,7 @@ namespace LeaveManagement.Application.UnitTests.LeaveAllocation.Commands
             //Assert
             exception.ShouldNotBeNull();
 
-            var LeaveAllocations = await _mockRepoAllocation.Object.GetAll();
+            var LeaveAllocations = await _mockUnitOfWork.Object.LeaveAllocationRepository.GetAll();
             LeaveAllocations.Count().ShouldBe(2);
         }
     }

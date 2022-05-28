@@ -19,11 +19,11 @@ namespace LeaveManagement.Application.UnitTests.LeaveTypes.Commands
     public class CreateLeaveTypeCommandHandlerTests
     {
         private readonly IMapper _mapper;
-        private readonly Mock<ILeaveTypeRepository> _mockRepo;
+        private readonly Mock<IUnitOfWork> _mockUnitOfWork;
 
         public CreateLeaveTypeCommandHandlerTests()
         {
-            _mockRepo = MockLeaveTypeRepository.GetLeaveTypeRepository();
+            _mockUnitOfWork = MockUnitOfWork.GetUnitOfWork();
 
             var mapperConfig = new MapperConfiguration(c =>
             {
@@ -37,7 +37,7 @@ namespace LeaveManagement.Application.UnitTests.LeaveTypes.Commands
         public async Task Valid_LeaveType_Added()
         {
             //Arrange
-            var handler = new CreateLeaveTypeCommandHandler(_mockRepo.Object, _mapper);
+            var handler = new CreateLeaveTypeCommandHandler(_mapper, _mockUnitOfWork.Object);
             var request = new CreateLeaveTypeCommand();
             request.CreateLeaveTypeDto = new CreateLeaveTypeDto
             {
@@ -49,7 +49,7 @@ namespace LeaveManagement.Application.UnitTests.LeaveTypes.Commands
             //Act
             var result = await handler.Handle(request, CancellationToken.None);
 
-            var leaveTypes = await _mockRepo.Object.GetAll();
+            var leaveTypes = await _mockUnitOfWork.Object.LeaveTypeRepository.GetAll();
 
             //Assert
             result.ShouldBeOfType<int>();
@@ -60,7 +60,7 @@ namespace LeaveManagement.Application.UnitTests.LeaveTypes.Commands
         public async Task Invalid_LeaveType_Added()
         {
             //Arrange
-            var handler = new CreateLeaveTypeCommandHandler(_mockRepo.Object, _mapper);
+            var handler = new CreateLeaveTypeCommandHandler(_mapper, _mockUnitOfWork.Object);
             var request = new CreateLeaveTypeCommand();
             request.CreateLeaveTypeDto = new CreateLeaveTypeDto
             {
@@ -77,8 +77,8 @@ namespace LeaveManagement.Application.UnitTests.LeaveTypes.Commands
 
             //Assert
             exception.ShouldNotBeNull();
-            
-            var leaveTypes = await _mockRepo.Object.GetAll();
+
+            var leaveTypes = await _mockUnitOfWork.Object.LeaveTypeRepository.GetAll();
             leaveTypes.Count().ShouldBe(2);
         }
     }

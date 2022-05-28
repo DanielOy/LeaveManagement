@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using LeaveManagement.Application.Contracts.Identity;
 using LeaveManagement.Application.Contracts.Persitence;
 using LeaveManagement.Application.DTOs.LeaveAllocation;
 using LeaveManagement.Application.Features.LeaveAllocations.Handlers.Queries;
@@ -16,11 +17,13 @@ namespace LeaveManagement.Application.UnitTests.LeaveAllocations.Queries
     public class GetLeaveAllocationDetailRequestHandlerTests
     {
         private readonly IMapper _mapper;
-        private readonly Mock<ILeaveAllocationRepository> _mockRepo;
+        private readonly Mock<IUnitOfWork> _mockUnitOfWork;
+        private readonly Mock<IUserService> _mockUserService;
 
         public GetLeaveAllocationDetailRequestHandlerTests()
         {
-            _mockRepo = MockLeaveAllocationRepository.GetLeaveAllocationRepository();
+            _mockUnitOfWork = MockUnitOfWork.GetUnitOfWork();
+            _mockUserService = MockUserService.GetUserService();
 
             var mapperConfig = new MapperConfiguration(c =>
             {
@@ -34,7 +37,7 @@ namespace LeaveManagement.Application.UnitTests.LeaveAllocations.Queries
         public async Task GetLeaveAllocationDetailTest()
         {
             //Arrange
-            var handler = new GetLeaveAllocationDetailRequestHandler(_mockRepo.Object, _mapper);
+            var handler = new GetLeaveAllocationDetailRequestHandler(_mapper, _mockUnitOfWork.Object, _mockUserService.Object);
             var request = new GetLeaveAllocationDetailRequest() { Id = 1 };
 
             //Act

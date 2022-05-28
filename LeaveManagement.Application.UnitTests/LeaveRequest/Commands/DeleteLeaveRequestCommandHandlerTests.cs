@@ -1,7 +1,5 @@
 ﻿using AutoMapper;
 using LeaveManagement.Application.Contracts.Persitence;
-using LeaveManagement.Application.DTOs.LeaveRequest;
-using LeaveManagement.Application.Exceptions;
 using LeaveManagement.Application.Features.LeaveRequests.Handlers.Commands;
 using LeaveManagement.Application.Features.LeaveRequests.Requests.Commands;
 using LeaveManagement.Application.Profiles;
@@ -10,7 +8,6 @@ using Moq;
 using NUnit.Framework;
 using Shouldly;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,11 +16,11 @@ namespace LeaveManagement.Application.UnitTests.LeaveRequests.Commands
 {
     public class DeleteLeaveRequestCommandHandlerTests
     {
-        private readonly Mock<ILeaveRequestRepository> _mockRepo;
+        private readonly Mock<IUnitOfWork> _mockUnitOfWork;
 
         public DeleteLeaveRequestCommandHandlerTests()
         {
-            _mockRepo = MockLeaveRequestRepository.GetLeaveRequestRepository();
+            _mockUnitOfWork = MockUnitOfWork.GetUnitOfWork();
 
             var mapperConfig = new MapperConfiguration(c =>
             {
@@ -35,13 +32,13 @@ namespace LeaveManagement.Application.UnitTests.LeaveRequests.Commands
         public async Task Valid_LeaveRequest_Deleted()
         {
             //Arrange
-            var handler = new DeleteLeaveRequestCommandHandler(_mockRepo.Object);
+            var handler = new DeleteLeaveRequestCommandHandler(_mockUnitOfWork.Object);
             var request = new DeleteLeaveRequestCommand() { Id = 1 };
 
             //Act
             var result = await handler.Handle(request, CancellationToken.None);
 
-            var LeaveRequests = await _mockRepo.Object.GetAll();
+            var LeaveRequests = await _mockUnitOfWork.Object.LeaveRequestRepository.GetAll();
 
             //Assert
             LeaveRequests.Count().ShouldBe(1);
@@ -51,7 +48,7 @@ namespace LeaveManagement.Application.UnitTests.LeaveRequests.Commands
         public async Task Invalid_LeaveRequest_Deleted()
         {
             //Arrange
-            var handler = new DeleteLeaveRequestCommandHandler(_mockRepo.Object);
+            var handler = new DeleteLeaveRequestCommandHandler(_mockUnitOfWork.Object);
             var request = new DeleteLeaveRequestCommand() { Id = 3 };
 
             //Act
@@ -64,7 +61,7 @@ namespace LeaveManagement.Application.UnitTests.LeaveRequests.Commands
             //Assert
             exception.ShouldNotBeNull();
 
-            var LeaveRequests = await _mockRepo.Object.GetAll();
+            var LeaveRequests = await _mockUnitOfWork.Object.LeaveRequestRepository.GetAll();
             LeaveRequests.Count().ShouldBe(2);
         }
     }

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using LeaveManagement.Application.Contracts.Identity;
 using LeaveManagement.Application.Contracts.Infrastructure;
 using LeaveManagement.Application.Contracts.Persitence;
 using LeaveManagement.Application.DTOs.LeaveRequest;
@@ -21,18 +22,19 @@ namespace LeaveManagement.Application.UnitTests.LeaveRequests.Commands
     public class CreateLeaveRequestCommandHandlerTests
     {
         private readonly IMapper _mapper;
-        private readonly Mock<ILeaveRequestRepository> _mockRepo;
+        private readonly Mock<IUnitOfWork> _mockUnitOfWork;
         private readonly Mock<IEmailSender> _mockEmail;
+        
 
         public CreateLeaveRequestCommandHandlerTests()
         {
-            _mockRepo = MockLeaveRequestRepository.GetLeaveRequestRepository();
+            _mockUnitOfWork = MockUnitOfWork.GetUnitOfWork();
             _mockEmail = MockEmailSender.GetEmailSender();
 
             var mapperConfig = new MapperConfiguration(c =>
-            {
-                c.AddProfile<MappingProfile>();
-            });
+           {
+               c.AddProfile<MappingProfile>();
+           });
 
             _mapper = mapperConfig.CreateMapper();
         }
@@ -41,7 +43,7 @@ namespace LeaveManagement.Application.UnitTests.LeaveRequests.Commands
         public async Task Valid_LeaveRequest_Added()
         {
             //Arrange
-            var handler = new CreateLeaveRequestCommandHandler(_mockRepo.Object, _mapper, _mockEmail.Object, null, null);
+            var handler = new CreateLeaveRequestCommandHandler(_mapper, _mockEmail.Object, null, _mockUnitOfWork.Object);
             var request = new CreateLeaveRequestCommand();
             request.CreateLeaveRequestDto = new CreateLeaveRequestDto
             {
@@ -55,7 +57,7 @@ namespace LeaveManagement.Application.UnitTests.LeaveRequests.Commands
             //Act
             var result = await handler.Handle(request, CancellationToken.None);
 
-            var LeaveRequests = await _mockRepo.Object.GetAll();
+            var LeaveRequests = await _mockUnitOfWork.Object.LeaveRequestRepository.GetAll();
 
             //Assert
             result.ShouldBeOfType<int>();
@@ -66,7 +68,7 @@ namespace LeaveManagement.Application.UnitTests.LeaveRequests.Commands
         public async Task Invalid_LeaveRequest_Added()
         {
             //Arrange
-            var handler = new CreateLeaveRequestCommandHandler(_mockRepo.Object, _mapper, _mockEmail.Object, null, null);
+            var handler = new CreateLeaveRequestCommandHandler(_mapper, _mockEmail.Object, null, _mockUnitOfWork.Object);
             var request = new CreateLeaveRequestCommand();
             request.CreateLeaveRequestDto = new CreateLeaveRequestDto
             {
@@ -85,7 +87,7 @@ namespace LeaveManagement.Application.UnitTests.LeaveRequests.Commands
             //Assert
             exception.ShouldNotBeNull();
 
-            var LeaveRequests = await _mockRepo.Object.GetAll();
+            var LeaveRequests = await _mockUnitOfWork.Object.LeaveRequestRepository.GetAll();
             LeaveRequests.Count().ShouldBe(2);
         }
     }

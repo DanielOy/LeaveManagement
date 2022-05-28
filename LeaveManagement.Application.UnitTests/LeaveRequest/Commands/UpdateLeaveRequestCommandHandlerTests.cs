@@ -18,11 +18,11 @@ namespace LeaveManagement.Application.UnitTests.LeaveRequests.Commands
     public class UpdateLeaveRequestCommandHandlerTests
     {
         private readonly IMapper _mapper;
-        private readonly Mock<ILeaveRequestRepository> _mockRepo;
+        private readonly Mock<IUnitOfWork> _mockUnitOfWork;
 
         public UpdateLeaveRequestCommandHandlerTests()
         {
-            _mockRepo = MockLeaveRequestRepository.GetLeaveRequestRepository();
+            _mockUnitOfWork = MockUnitOfWork.GetUnitOfWork();
 
             var mapperConfig = new MapperConfiguration(c =>
             {
@@ -36,7 +36,7 @@ namespace LeaveManagement.Application.UnitTests.LeaveRequests.Commands
         public async Task Valid_LeaveRequest_Updated()
         {
             //Arrange
-            var handler = new UpdateLeaveRequestCommandHandler(_mockRepo.Object, _mapper, null, null);
+            var handler = new UpdateLeaveRequestCommandHandler(_mapper, _mockUnitOfWork.Object);
             var request = new UpdateLeaveRequestCommand();
             var LeaveRequestDto = new UpdateLeaveRequestDto
             {
@@ -53,7 +53,7 @@ namespace LeaveManagement.Application.UnitTests.LeaveRequests.Commands
             //Act
             await handler.Handle(request, CancellationToken.None);
 
-            var LeaveRequest = await _mockRepo.Object.Get(1);
+            var LeaveRequest = await _mockUnitOfWork.Object.LeaveRequestRepository.Get(1);
 
             //Assert
             LeaveRequest.StartDate.ShouldBe(LeaveRequestDto.StartDate);
@@ -67,7 +67,7 @@ namespace LeaveManagement.Application.UnitTests.LeaveRequests.Commands
         public async Task Invalid_LeaveRequest_Updated()
         {
             //Arrange
-            var handler = new UpdateLeaveRequestCommandHandler(_mockRepo.Object, _mapper, null, null);
+            var handler = new UpdateLeaveRequestCommandHandler(_mapper, _mockUnitOfWork.Object);
             var request = new UpdateLeaveRequestCommand();
             request.LeaveRequestDto = new UpdateLeaveRequestDto
             {

@@ -12,17 +12,17 @@ namespace LeaveManagement.Application.Features.LeaveRequests.Handlers.Queries
 {
     public class GetLeaveRequestListRequestHandler : IRequestHandler<GetLeaveRequestListRequest, List<LeaveRequestListDto>>
     {
-        private readonly ILeaveRequestRepository _leaveRequestRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContext;
         private readonly IUserService _userService;
 
-        public GetLeaveRequestListRequestHandler(ILeaveRequestRepository leaveRequestRepository, IMapper mapper, IHttpContextAccessor httpContext, IUserService userService)
+        public GetLeaveRequestListRequestHandler(IMapper mapper, IHttpContextAccessor httpContext, IUserService userService, IUnitOfWork unitOfWork)
         {
-            _leaveRequestRepository = leaveRequestRepository;
             _mapper = mapper;
             _httpContext = httpContext;
             _userService = userService;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<List<LeaveRequestListDto>> Handle(GetLeaveRequestListRequest request, CancellationToken cancellationToken)
@@ -33,7 +33,7 @@ namespace LeaveManagement.Application.Features.LeaveRequests.Handlers.Queries
             if (request.IsLoggedInUser)
             {
                 var userId = _httpContext.HttpContext.User.FindFirst(q => q.Type == CustomClaimTypes.Uid)?.Value;
-                leaveRequests = await _leaveRequestRepository.GetLeaveRequestsWithDetails(userId);
+                leaveRequests = await _unitOfWork.LeaveRequestRepository.GetLeaveRequestsWithDetails(userId);
 
                 var employee = await _userService.GetEmployee(userId);
                 requests = _mapper.Map<List<LeaveRequestListDto>>(leaveRequests);
@@ -43,7 +43,7 @@ namespace LeaveManagement.Application.Features.LeaveRequests.Handlers.Queries
             }
             else
             {
-                leaveRequests = await _leaveRequestRepository.GetLeaveRequestsWithDetails();
+                leaveRequests = await _unitOfWork.LeaveRequestRepository.GetLeaveRequestsWithDetails();
                 requests = _mapper.Map<List<LeaveRequestListDto>>(leaveRequests);
 
                 foreach (var req in requests)

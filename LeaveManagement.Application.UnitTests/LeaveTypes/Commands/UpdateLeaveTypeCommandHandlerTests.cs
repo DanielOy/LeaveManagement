@@ -17,11 +17,11 @@ namespace LeaveManagement.Application.UnitTests.LeaveTypes.Commands
     public class UpdateLeaveTypeCommandHandlerTests
     {
         private readonly IMapper _mapper;
-        private readonly Mock<ILeaveTypeRepository> _mockRepo;
+        private readonly Mock<IUnitOfWork> _mockUnitOfWork;
 
         public UpdateLeaveTypeCommandHandlerTests()
         {
-            _mockRepo = MockLeaveTypeRepository.GetLeaveTypeRepository();
+            _mockUnitOfWork = MockUnitOfWork.GetUnitOfWork();
 
             var mapperConfig = new MapperConfiguration(c =>
             {
@@ -35,7 +35,7 @@ namespace LeaveManagement.Application.UnitTests.LeaveTypes.Commands
         public async Task Valid_LeaveType_Updated()
         {
             //Arrange
-            var handler = new UpdateLeaveTypeCommandHandler(_mockRepo.Object, _mapper);
+            var handler = new UpdateLeaveTypeCommandHandler(_mapper, _mockUnitOfWork.Object);
             var request = new UpdateLeaveTypeCommand();
             var leaveTypeDto = new LeaveTypeDto
             {
@@ -49,7 +49,7 @@ namespace LeaveManagement.Application.UnitTests.LeaveTypes.Commands
             //Act
             await handler.Handle(request, CancellationToken.None);
 
-            var leaveType = await _mockRepo.Object.Get(1);
+            var leaveType = await _mockUnitOfWork.Object.LeaveTypeRepository.Get(1);
 
             //Assert
             leaveType.Name.ShouldBe(leaveTypeDto.Name);
@@ -60,7 +60,7 @@ namespace LeaveManagement.Application.UnitTests.LeaveTypes.Commands
         public async Task Invalid_LeaveType_Updated()
         {
             //Arrange
-            var handler = new UpdateLeaveTypeCommandHandler(_mockRepo.Object, _mapper);
+            var handler = new UpdateLeaveTypeCommandHandler(_mapper, _mockUnitOfWork.Object);
             var request = new UpdateLeaveTypeCommand();
             request.LeaveTypeDto = new LeaveTypeDto
             {

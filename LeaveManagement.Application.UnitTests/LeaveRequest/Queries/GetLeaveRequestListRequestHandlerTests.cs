@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using LeaveManagement.Application.Contracts.Identity;
 using LeaveManagement.Application.Contracts.Persitence;
 using LeaveManagement.Application.DTOs.LeaveRequest;
 using LeaveManagement.Application.Features.LeaveRequests.Handlers.Queries;
@@ -18,11 +19,13 @@ namespace LeaveManagement.Application.UnitTests.LeaveRequests.Queries
     public class GetLeaveAllocationListRequestHandlerTests
     {
         private readonly IMapper _mapper;
-        private readonly Mock<ILeaveRequestRepository> _mockRepo;
+        private readonly Mock<IUnitOfWork> _mockUnitOfWork;
+        private readonly Mock<IUserService> _mockUserService;
 
         public GetLeaveAllocationListRequestHandlerTests()
         {
-            _mockRepo = MockLeaveRequestRepository.GetLeaveRequestRepository();
+            _mockUnitOfWork = MockUnitOfWork.GetUnitOfWork();
+            _mockUserService = MockUserService.GetUserService();
 
             var mapperConfig = new MapperConfiguration(c =>
             {
@@ -36,7 +39,7 @@ namespace LeaveManagement.Application.UnitTests.LeaveRequests.Queries
         public async Task GetLeaveRequestListTest()
         {
             //Arrange
-            var handler = new GetLeaveRequestListRequestHandler(_mockRepo.Object, _mapper, null, null);
+            var handler = new GetLeaveRequestListRequestHandler(_mapper, null, _mockUserService.Object, _mockUnitOfWork.Object);
             var request = new GetLeaveRequestListRequest();
 
             //Act
@@ -44,7 +47,7 @@ namespace LeaveManagement.Application.UnitTests.LeaveRequests.Queries
 
             //Assert
             result.ShouldBeOfType<List<LeaveRequestListDto>>();
-            result.Count().ShouldBe(2);
+            result.Count.ShouldBe(2);
         }
     }
 }

@@ -9,30 +9,30 @@ namespace LeaveManagement.Application.Features.LeaveAllocations.Handlers.Command
 {
     public class UpdateLeaveAllocationCommandHandler : IRequestHandler<UpdateLeaveAllocationCommand, Unit>
     {
-        private readonly ILeaveAllocationRepository _leaveAllocationRepository;
-        private readonly ILeaveTypeRepository _leaveTypeRepository;
         private readonly IMapper _mapper;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public UpdateLeaveAllocationCommandHandler(ILeaveAllocationRepository leaveAllocationRepository, ILeaveTypeRepository leaveTypeRepository, IMapper mapper)
+        public UpdateLeaveAllocationCommandHandler(IMapper mapper, IUnitOfWork unitOfWork)
         {
-            _leaveAllocationRepository = leaveAllocationRepository;
             _mapper = mapper;
-            _leaveTypeRepository = leaveTypeRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<Unit> Handle(UpdateLeaveAllocationCommand request, CancellationToken cancellationToken)
         {
-            var validator = new UpdateLeaveAllocationDtoValidator(_leaveTypeRepository);
+            var validator = new UpdateLeaveAllocationDtoValidator(_unitOfWork.LeaveTypeRepository);
             var validationResult = await validator.ValidateAsync(request.UpdateLeaveAllocationDto, cancellationToken);
-            var types = await _leaveTypeRepository.GetAll();
+            var types = await _unitOfWork.LeaveTypeRepository.GetAll();
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult);
 
-            var leaveAllocation = await _leaveAllocationRepository.Get(request.UpdateLeaveAllocationDto.Id);
+            var leaveAllocation = await _unitOfWork.LeaveAllocationRepository.Get(request.UpdateLeaveAllocationDto.Id);
 
             _mapper.Map(request.UpdateLeaveAllocationDto, leaveAllocation);
 
-            await _leaveAllocationRepository.Update(leaveAllocation);
+            await _unitOfWork.LeaveAllocationRepository.Update(leaveAllocation);
+
+            await _unitOfWork.Save();
 
             return Unit.Value;
         }

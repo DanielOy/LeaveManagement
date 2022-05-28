@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using LeaveManagement.Application.Contracts.Identity;
 using LeaveManagement.Application.Contracts.Persitence;
 using LeaveManagement.Application.DTOs.LeaveAllocation;
 using LeaveManagement.Application.Exceptions;
@@ -19,17 +20,18 @@ namespace LeaveManagement.Application.UnitTests.LeaveAllocation.Commands
     public class CreateLeaveAllocationCommandHandlerTests
     {
         private readonly IMapper _mapper;
-        private readonly Mock<ILeaveAllocationRepository> _mockRepoAllocation;
-        private readonly Mock<ILeaveTypeRepository> _mockRepoType;
+        private readonly Mock<IUnitOfWork> _mockUnitOfWork;
+        private readonly Mock<IUserService> _mockUserService;
+
         public CreateLeaveAllocationCommandHandlerTests()
         {
-            _mockRepoAllocation = MockLeaveAllocationRepository.GetLeaveAllocationRepository();
-            _mockRepoType = MockLeaveTypeRepository.GetLeaveTypeRepository();
+            _mockUnitOfWork = MockUnitOfWork.GetUnitOfWork();
+            _mockUserService = MockUserService.GetUserService();
 
             var mapperConfig = new MapperConfiguration(c =>
-            {
-                c.AddProfile<MappingProfile>();
-            });
+           {
+               c.AddProfile<MappingProfile>();
+           });
 
             _mapper = mapperConfig.CreateMapper();
         }
@@ -38,7 +40,7 @@ namespace LeaveManagement.Application.UnitTests.LeaveAllocation.Commands
         public async Task Valid_LeaveAllocation_Added()
         {
             //Arrange
-            var handler = new CreateLeaveAllocationCommandHandler(_mockRepoAllocation.Object, _mockRepoType.Object, _mapper,null);
+            var handler = new CreateLeaveAllocationCommandHandler(_mapper, _mockUserService.Object, _mockUnitOfWork.Object);
             var request = new CreateLeaveAllocationCommand();
             request.CreateLeaveAllocationDto = new CreateLeaveAllocationDto
             {
@@ -49,7 +51,7 @@ namespace LeaveManagement.Application.UnitTests.LeaveAllocation.Commands
             //Act
             var result = await handler.Handle(request, CancellationToken.None);
 
-            var LeaveAllocations = await _mockRepoAllocation.Object.GetAll();
+            var LeaveAllocations = await _mockUnitOfWork.Object.LeaveAllocationRepository.GetAll();
 
             //Assert
             result.ShouldBeOfType<int>();
@@ -60,7 +62,7 @@ namespace LeaveManagement.Application.UnitTests.LeaveAllocation.Commands
         public async Task Invalid_LeaveAllocation_Added()
         {
             //Arrange
-            var handler = new CreateLeaveAllocationCommandHandler(_mockRepoAllocation.Object, _mockRepoType.Object, _mapper, null);
+            var handler = new CreateLeaveAllocationCommandHandler(_mapper, _mockUserService.Object, _mockUnitOfWork.Object);
             var request = new CreateLeaveAllocationCommand();
             request.CreateLeaveAllocationDto = new CreateLeaveAllocationDto
             {
@@ -77,7 +79,7 @@ namespace LeaveManagement.Application.UnitTests.LeaveAllocation.Commands
             //Assert
             exception.ShouldNotBeNull();
 
-            var LeaveAllocations = await _mockRepoAllocation.Object.GetAll();
+            var LeaveAllocations = await _mockUnitOfWork.Object.LeaveAllocationRepository.GetAll();
             LeaveAllocations.Count().ShouldBe(2);
         }
     }

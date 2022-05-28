@@ -16,11 +16,11 @@ namespace LeaveManagement.Application.UnitTests.LeaveRequests.Queries
     public class GetLeaveRequestDetailRequestHandlerTests
     {
         private readonly IMapper _mapper;
-        private readonly Mock<ILeaveRequestRepository> _mockRepo;
+        private readonly Mock<IUnitOfWork> _mockUnitOfWork;
 
         public GetLeaveRequestDetailRequestHandlerTests()
         {
-            _mockRepo = MockLeaveRequestRepository.GetLeaveRequestRepository();
+            _mockUnitOfWork = MockUnitOfWork.GetUnitOfWork();
 
             var mapperConfig = new MapperConfiguration(c =>
             {
@@ -34,7 +34,7 @@ namespace LeaveManagement.Application.UnitTests.LeaveRequests.Queries
         public async Task GetLeaveRequestDetailTest()
         {
             //Arrange
-            var handler = new GetLeaveRequestDetailRequestHandler(_mockRepo.Object, _mapper, null);
+            var handler = new GetLeaveRequestDetailRequestHandler(_mapper, null, _mockUnitOfWork.Object);
             var request = new GetLeaveRequestDetailRequest() { Id = 1 };
 
             //Act

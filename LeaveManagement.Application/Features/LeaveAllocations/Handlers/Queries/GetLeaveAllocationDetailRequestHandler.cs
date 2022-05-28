@@ -9,19 +9,20 @@ namespace LeaveManagement.Application.Features.LeaveAllocations.Handlers.Queries
 {
     public class GetLeaveAllocationDetailRequestHandler : IRequestHandler<GetLeaveAllocationDetailRequest, LeaveAllocationDto>
     {
-        private readonly ILeaveAllocationRepository _leaveAllocationRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IUserService _userService;
 
-        public GetLeaveAllocationDetailRequestHandler(ILeaveAllocationRepository leaveAllocationRepository, IMapper mapper)
+        public GetLeaveAllocationDetailRequestHandler(IMapper mapper, IUnitOfWork unitOfWork, IUserService userService)
         {
-            _leaveAllocationRepository = leaveAllocationRepository;
             _mapper = mapper;
+            _unitOfWork = unitOfWork;
+            _userService = userService;
         }
 
         public async Task<LeaveAllocationDto> Handle(GetLeaveAllocationDetailRequest request, CancellationToken cancellationToken)
         {
-            var leaveAllocation = await _leaveAllocationRepository.GetLeaveAllocationWithDetails(request.Id);
+            var leaveAllocation = await _unitOfWork.LeaveAllocationRepository.GetLeaveAllocationWithDetails(request.Id);
             var leaveAllocationDto = _mapper.Map<LeaveAllocationDto>(leaveAllocation);
             leaveAllocationDto.Employee = await _userService.GetEmployee(leaveAllocation.EmployeeId);
            

@@ -10,13 +10,13 @@ namespace LeaveManagement.Application.Features.LeaveTypes.Handlers.Commands
 {
     public class CreateLeaveTypeCommandHandler : IRequestHandler<CreateLeaveTypeCommand, int>
     {
-        private readonly ILeaveTypeRepository _leaveTypeRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public CreateLeaveTypeCommandHandler(ILeaveTypeRepository leaveTypeRepository, IMapper mapper)
+        public CreateLeaveTypeCommandHandler(IMapper mapper, IUnitOfWork unitOfWork)
         {
-            _leaveTypeRepository = leaveTypeRepository;
             _mapper = mapper;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<int> Handle(CreateLeaveTypeCommand request, CancellationToken cancellationToken)
@@ -29,7 +29,9 @@ namespace LeaveManagement.Application.Features.LeaveTypes.Handlers.Commands
 
             var leaveType = _mapper.Map<LeaveType>(request.CreateLeaveTypeDto);
 
-            leaveType = await _leaveTypeRepository.Add(leaveType);
+            leaveType = await _unitOfWork.LeaveTypeRepository.Add(leaveType);
+
+            await _unitOfWork.Save();
 
             return leaveType.Id;
         }

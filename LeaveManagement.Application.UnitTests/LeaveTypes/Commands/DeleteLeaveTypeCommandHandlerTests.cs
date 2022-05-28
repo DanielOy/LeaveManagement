@@ -19,11 +19,10 @@ namespace LeaveManagement.Application.UnitTests.LeaveTypes.Commands
 {
     public class DeleteLeaveTypeCommandHandlerTests
     {
-        private readonly Mock<ILeaveTypeRepository> _mockRepo;
-
+        private readonly Mock<IUnitOfWork> _mockUnitOfWork;
         public DeleteLeaveTypeCommandHandlerTests()
         {
-            _mockRepo = MockLeaveTypeRepository.GetLeaveTypeRepository();
+            _mockUnitOfWork = MockUnitOfWork.GetUnitOfWork();
 
             var mapperConfig = new MapperConfiguration(c =>
             {
@@ -35,13 +34,13 @@ namespace LeaveManagement.Application.UnitTests.LeaveTypes.Commands
         public async Task Valid_LeaveType_Deleted()
         {
             //Arrange
-            var handler = new DeleteLeaveTypeCommandHandler(_mockRepo.Object);
+            var handler = new DeleteLeaveTypeCommandHandler(_mockUnitOfWork.Object);
             var request = new DeleteLeaveTypeCommand() { Id = 1 };
 
             //Act
-            var result = await handler.Handle(request, CancellationToken.None);
+            await handler.Handle(request, CancellationToken.None);
 
-            var leaveTypes = await _mockRepo.Object.GetAll();
+            var leaveTypes = await _mockUnitOfWork.Object.LeaveTypeRepository.GetAll();
 
             //Assert
             leaveTypes.Count().ShouldBe(1);
@@ -51,7 +50,7 @@ namespace LeaveManagement.Application.UnitTests.LeaveTypes.Commands
         public async Task Invalid_LeaveType_Deleted()
         {
             //Arrange
-            var handler = new DeleteLeaveTypeCommandHandler(_mockRepo.Object);
+            var handler = new DeleteLeaveTypeCommandHandler(_mockUnitOfWork.Object);
             var request = new DeleteLeaveTypeCommand() { Id = 3 };
 
             //Act
@@ -64,7 +63,7 @@ namespace LeaveManagement.Application.UnitTests.LeaveTypes.Commands
             //Assert
             exception.ShouldNotBeNull();
 
-            var leaveTypes = await _mockRepo.Object.GetAll();
+            var leaveTypes = await _mockUnitOfWork.Object.LeaveTypeRepository.GetAll();
             leaveTypes.Count().ShouldBe(2);
         }
     }

@@ -17,13 +17,11 @@ namespace LeaveManagement.Application.UnitTests.LeaveAllocation.Commands
     public class UpdateLeaveAllocationCommandHandlerTests
     {
         private readonly IMapper _mapper;
-        private readonly Mock<ILeaveAllocationRepository> _mockRepoAllocation;
-        private readonly Mock<ILeaveTypeRepository> _mockRepoType;
+        private readonly Mock<IUnitOfWork> _mockUnitOfWork;
 
         public UpdateLeaveAllocationCommandHandlerTests()
         {
-            _mockRepoAllocation = MockLeaveAllocationRepository.GetLeaveAllocationRepository();
-            _mockRepoType = MockLeaveTypeRepository.GetLeaveTypeRepository();
+            _mockUnitOfWork = MockUnitOfWork.GetUnitOfWork();
 
             var mapperConfig = new MapperConfiguration(c =>
             {
@@ -37,7 +35,7 @@ namespace LeaveManagement.Application.UnitTests.LeaveAllocation.Commands
         public async Task Valid_LeaveAllocation_Updated()
         {
             //Arrange
-            var handler = new UpdateLeaveAllocationCommandHandler(_mockRepoAllocation.Object, _mockRepoType.Object, _mapper);
+            var handler = new UpdateLeaveAllocationCommandHandler(_mapper, _mockUnitOfWork.Object);
             var request = new UpdateLeaveAllocationCommand();
             var LeaveAllocationDto = new UpdateLeaveAllocationDto
             {
@@ -52,7 +50,7 @@ namespace LeaveManagement.Application.UnitTests.LeaveAllocation.Commands
             //Act
             await handler.Handle(request, CancellationToken.None);
 
-            var LeaveAllocation = await _mockRepoAllocation.Object.Get(LeaveAllocationDto.Id);
+            var LeaveAllocation = await _mockUnitOfWork.Object.LeaveAllocationRepository.Get(LeaveAllocationDto.Id);
 
             //Assert
             LeaveAllocation.Period.ShouldBe(LeaveAllocationDto.Period);
@@ -64,7 +62,7 @@ namespace LeaveManagement.Application.UnitTests.LeaveAllocation.Commands
         public async Task Invalid_LeaveAllocation_Updated()
         {
             //Arrange
-            var handler = new UpdateLeaveAllocationCommandHandler(_mockRepoAllocation.Object, _mockRepoType.Object, _mapper);
+            var handler = new UpdateLeaveAllocationCommandHandler(_mapper, _mockUnitOfWork.Object);
             var request = new UpdateLeaveAllocationCommand();
             request.UpdateLeaveAllocationDto = new UpdateLeaveAllocationDto
             {
