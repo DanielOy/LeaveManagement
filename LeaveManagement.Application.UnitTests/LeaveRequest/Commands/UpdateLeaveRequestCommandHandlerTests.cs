@@ -36,7 +36,7 @@ namespace LeaveManagement.Application.UnitTests.LeaveRequests.Commands
         public async Task Valid_LeaveRequest_Updated()
         {
             //Arrange
-            var handler = new UpdateLeaveRequestCommandHandler(_mockRepo.Object, _mapper);
+            var handler = new UpdateLeaveRequestCommandHandler(_mockRepo.Object, _mapper, null, null);
             var request = new UpdateLeaveRequestCommand();
             var LeaveRequestDto = new UpdateLeaveRequestDto
             {
@@ -67,7 +67,7 @@ namespace LeaveManagement.Application.UnitTests.LeaveRequests.Commands
         public async Task Invalid_LeaveRequest_Updated()
         {
             //Arrange
-            var handler = new UpdateLeaveRequestCommandHandler(_mockRepo.Object, _mapper);
+            var handler = new UpdateLeaveRequestCommandHandler(_mockRepo.Object, _mapper, null, null);
             var request = new UpdateLeaveRequestCommand();
             request.LeaveRequestDto = new UpdateLeaveRequestDto
             {

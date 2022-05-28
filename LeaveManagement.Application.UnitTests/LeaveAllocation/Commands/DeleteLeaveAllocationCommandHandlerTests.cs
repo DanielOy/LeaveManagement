@@ -17,7 +17,6 @@ namespace LeaveManagement.Application.UnitTests.LeaveAllocation.Commands
     public class DeleteLeaveAllocationCommandHandlerTests
     {
         private readonly Mock<ILeaveAllocationRepository> _mockRepoAllocation;
-        private readonly Mock<ILeaveTypeRepository> _mockRepoType;
 
         public DeleteLeaveAllocationCommandHandlerTests()
         {

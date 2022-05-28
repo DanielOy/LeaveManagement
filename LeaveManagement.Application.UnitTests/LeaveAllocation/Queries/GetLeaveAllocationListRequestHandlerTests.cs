@@ -36,7 +36,7 @@ namespace LeaveManagement.Application.UnitTests.LeaveAllocations.Queries
         public async Task GetLeaveAllocationListTest()
         {
             //Arrange
-            var handler = new GetLeaveAllocationListRequestHandler(_mockRepo.Object, _mapper);
+            var handler = new GetLeaveAllocationListRequestHandler(_mockRepo.Object, _mapper, null, null);
             var request = new GetLeaveAllocationListRequest();
 
             //Act

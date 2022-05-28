@@ -11,7 +11,7 @@ namespace LeaveManagement.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Administrator")]
+    [Authorize]
     public class LeaveTypesController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -40,6 +40,7 @@ namespace LeaveManagement.Api.Controllers
 
         // POST api/<LeaveTypesController>
         [HttpPost]
+        [Authorize(Roles = "Administrator")]
         public async Task<ActionResult<int>> Post([FromBody] CreateLeaveTypeDto leaveType)
         {
             var command = new CreateLeaveTypeCommand() { CreateLeaveTypeDto = leaveType };
@@ -49,6 +50,7 @@ namespace LeaveManagement.Api.Controllers
 
         // PUT api/<LeaveTypesController>
         [HttpPut("{id}")]
+        [Authorize(Roles = "Administrator")]
         public async Task<ActionResult<int>> Put([FromBody] LeaveTypeDto leaveType)
         {
             var command = new UpdateLeaveTypeCommand() { LeaveTypeDto = leaveType };
@@ -58,6 +60,7 @@ namespace LeaveManagement.Api.Controllers
 
         // DELETE api/<LeaveTypesController>/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrator")]
         public async Task<ActionResult<int>> Delete(int id)
         {
             var command = new DeleteLeaveTypeCommand() { Id = id };

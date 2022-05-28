@@ -22,9 +22,9 @@ namespace LeaveManagement.Api.Controllers
         // GET: api/<LeaveAllocationController>
         [HttpGet]
         [HttpGet]
-        public async Task<ActionResult<List<LeaveAllocationDto>>> Get()
+        public async Task<ActionResult<List<LeaveAllocationDto>>> Get(bool isLoggedInUser = false)
         {
-            var request = new GetLeaveAllocationListRequest();
+            var request = new GetLeaveAllocationListRequest { IsLoggedUser = isLoggedInUser };
             var leaveTypes = await _mediator.Send(request);
             return Ok(leaveTypes);
         }

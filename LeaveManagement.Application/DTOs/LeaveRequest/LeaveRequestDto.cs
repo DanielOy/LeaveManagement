@@ -1,5 +1,6 @@
 ﻿using LeaveManagement.Application.DTOs.Common;
 using LeaveManagement.Application.DTOs.LeaveType;
+using LeaveManagement.Application.Models.Identity;
 
 namespace LeaveManagement.Application.DTOs.LeaveRequest
 {
@@ -7,6 +8,8 @@ namespace LeaveManagement.Application.DTOs.LeaveRequest
     {
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
+        public Employee Employee { get; set; }
+        public int RequestingEmployeeId { get; set; }
         public LeaveTypeDto LeaveType { get; set; }
         public int LeaveTypeId { get; set; }
         public DateTime DateRequested { get; set; }

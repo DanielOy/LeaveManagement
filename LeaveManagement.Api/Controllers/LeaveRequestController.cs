@@ -21,9 +21,9 @@ namespace LeaveManagement.Api.Controllers
 
         // GET: api/<LeaveRequestController>
         [HttpGet]
-        public async Task<ActionResult<List<LeaveRequestListDto>>> Get()
+        public async Task<ActionResult<List<LeaveRequestListDto>>> Get(bool isLoggedInUser = false)
         {
-            var request = new GetLeaveRequestListRequest();
+            var request = new GetLeaveRequestListRequest { IsLoggedInUser = isLoggedInUser };
             var leaveTypes = await _mediator.Send(request);
             return Ok(leaveTypes);
         }

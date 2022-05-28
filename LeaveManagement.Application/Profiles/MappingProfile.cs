@@ -11,7 +11,9 @@ namespace LeaveManagement.Application.Profiles
         public MappingProfile()
         {
             CreateMap<LeaveRequest, LeaveRequestDto>().ReverseMap();
-            CreateMap<LeaveRequest, LeaveRequestListDto>().ReverseMap();
+            CreateMap<LeaveRequest, LeaveRequestListDto>()
+                .ForMember(destination => destination.DateRequested, options => options.MapFrom(source => source.CreatedDate))
+                .ReverseMap();
             CreateMap<LeaveRequest, CreateLeaveRequestDto>().ReverseMap();
             CreateMap<LeaveRequest, UpdateLeaveRequestDto>().ReverseMap();
 

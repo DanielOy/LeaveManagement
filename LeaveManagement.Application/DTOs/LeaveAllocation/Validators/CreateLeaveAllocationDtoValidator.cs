@@ -11,7 +11,14 @@ namespace LeaveManagement.Application.DTOs.LeaveAllocation.Validators
         {
             _leaveTypeRepository = leaveTypeRepository;
 
-            Include(new ILeaveAllocationDtoValidator(_leaveTypeRepository));
+            RuleFor(x => x.LeaveTypeId)
+                .GreaterThan(0)
+                .MustAsync(async (id, token) =>
+                {
+                    var leaveTypeExists = await _leaveTypeRepository.Exists(id);
+                    return leaveTypeExists;
+                })
+                .WithMessage("{PropertyName} doesn't exists");
         }
     }
 }

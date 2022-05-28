@@ -36,7 +36,7 @@ namespace LeaveManagement.Application.UnitTests.LeaveRequests.Queries
         public async Task GetLeaveRequestListTest()
         {
             //Arrange
-            var handler = new GetLeaveRequestListRequestHandler(_mockRepo.Object, _mapper);
+            var handler = new GetLeaveRequestListRequestHandler(_mockRepo.Object, _mapper, null, null);
             var request = new GetLeaveRequestListRequest();
 
             //Act

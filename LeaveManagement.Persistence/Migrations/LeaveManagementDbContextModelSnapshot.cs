@@ -17,7 +17,7 @@ namespace LeaveManagement.Persistence.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.4")
+                .HasAnnotation("ProductVersion", "6.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
@@ -35,6 +35,9 @@ namespace LeaveManagement.Persistence.Migrations
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("EmployeeId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("nvarchar(max)");
@@ -97,6 +100,9 @@ namespace LeaveManagement.Persistence.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("RequestComments")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RequestingEmployeeId")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("StartDate")

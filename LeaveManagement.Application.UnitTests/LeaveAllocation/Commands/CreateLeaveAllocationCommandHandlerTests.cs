@@ -38,13 +38,11 @@ namespace LeaveManagement.Application.UnitTests.LeaveAllocation.Commands
         public async Task Valid_LeaveAllocation_Added()
         {
             //Arrange
-            var handler = new CreateLeaveAllocationCommandHandler(_mockRepoAllocation.Object, _mockRepoType.Object, _mapper);
+            var handler = new CreateLeaveAllocationCommandHandler(_mockRepoAllocation.Object, _mockRepoType.Object, _mapper,null);
             var request = new CreateLeaveAllocationCommand();
             request.CreateLeaveAllocationDto = new CreateLeaveAllocationDto
             {
-                LeaveTypeId = 1,
-                NumberOfDays = 3,
-                Period = 2022
+                LeaveTypeId = 1
             };
 
 
@@ -62,13 +60,11 @@ namespace LeaveManagement.Application.UnitTests.LeaveAllocation.Commands
         public async Task Invalid_LeaveAllocation_Added()
         {
             //Arrange
-            var handler = new CreateLeaveAllocationCommandHandler(_mockRepoAllocation.Object, _mockRepoType.Object, _mapper);
+            var handler = new CreateLeaveAllocationCommandHandler(_mockRepoAllocation.Object, _mockRepoType.Object, _mapper, null);
             var request = new CreateLeaveAllocationCommand();
             request.CreateLeaveAllocationDto = new CreateLeaveAllocationDto
             {
-                LeaveTypeId = 3,
-                NumberOfDays = 3,
-                Period = -1
+                LeaveTypeId = 3
             };
 
             //Act

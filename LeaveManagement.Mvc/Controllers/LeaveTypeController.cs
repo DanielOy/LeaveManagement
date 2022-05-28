@@ -10,10 +10,12 @@ namespace LeaveManagement.Mvc.Controllers
     public class LeaveTypeController : Controller
     {
         private readonly ILeaveTypeService _leaveTypeService;
+        private readonly ILeaveAllocationService _leaveAllocationService;
 
-        public LeaveTypeController(ILeaveTypeService leaveTypeService)
+        public LeaveTypeController(ILeaveTypeService leaveTypeService, ILeaveAllocationService leaveAllocationService)
         {
             _leaveTypeService = leaveTypeService;
+            _leaveAllocationService = leaveAllocationService;
         }
 
         // GET: LeaveTypeController
@@ -32,7 +34,7 @@ namespace LeaveManagement.Mvc.Controllers
         }
 
         // GET: LeaveTypeController/Create
-        public async Task<ActionResult> Create()
+        public ActionResult Create()
         {
             return View();
         }
@@ -102,6 +104,26 @@ namespace LeaveManagement.Mvc.Controllers
                     return RedirectToAction(nameof(Index));
                 }
                 ModelState.AddModelError("", response.Message);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+            }
+
+            return BadRequest();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Allocate(int id)
+        {
+            try
+            {
+                var response = await _leaveAllocationService.CreateLeaveAllocations(id);
+                if (response.Success)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
             }
             catch (Exception ex)
             {
