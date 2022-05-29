@@ -23,10 +23,13 @@ namespace LeaveManagement.Application.Features.LeaveTypes.Handlers.Commands
             var validator = new ILeaveTypeDtoValidator();
             var validationResult = await validator.ValidateAsync(request.LeaveTypeDto, cancellationToken);
 
-            if (!validationResult.IsValid)
+            if (validationResult.IsValid == false)
                 throw new ValidationException(validationResult);
 
             var leaveType = await _unitOfWork.LeaveTypeRepository.Get(request.LeaveTypeDto.Id);
+
+            if (leaveType is null)
+                throw new NotFoundException(nameof(leaveType), request.LeaveTypeDto.Id);
 
             _mapper.Map(request.LeaveTypeDto, leaveType);
 

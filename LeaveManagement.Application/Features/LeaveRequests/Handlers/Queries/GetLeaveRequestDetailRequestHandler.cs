@@ -5,6 +5,7 @@ using LeaveManagement.Application.Contracts.Persitence;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using LeaveManagement.Application.Contracts.Identity;
+using LeaveManagement.Application.Exceptions;
 
 namespace LeaveManagement.Application.Features.LeaveRequests.Handlers.Queries
 {
@@ -24,6 +25,10 @@ namespace LeaveManagement.Application.Features.LeaveRequests.Handlers.Queries
         public async Task<LeaveRequestDto> Handle(GetLeaveRequestDetailRequest request, CancellationToken cancellationToken)
         {
             var leaveRequest = await _unitOfWork.LeaveRequestRepository.Get(request.Id);
+
+            if (leaveRequest is null)
+                throw new NotFoundException(nameof(leaveRequest), request.Id);
+
             var leaveRequestDto = _mapper.Map<LeaveRequestDto>(leaveRequest);
             leaveRequestDto.Employee =await _userService.GetEmployee(leaveRequest.RequestingEmployeeId);
 

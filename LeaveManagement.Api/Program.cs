@@ -1,3 +1,4 @@
+using LeaveManagement.Api.Middleware;
 using LeaveManagement.Application;
 using LeaveManagement.Identity;
 using LeaveManagement.Infrastructure;
@@ -66,6 +67,8 @@ builder.Services.AddSwaggerGen(configuration =>
 
 
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseAuthentication();
 

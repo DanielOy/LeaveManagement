@@ -33,6 +33,9 @@ namespace LeaveManagement.Application.Features.LeaveRequests.Handlers.Commands
 
                 leaveRequest = await _unitOfWork.LeaveRequestRepository.Get(request.LeaveRequestDto.Id);
 
+                if (leaveRequest is null)
+                    throw new NotFoundException(nameof(leaveRequest), request.LeaveRequestDto.Id);
+
                 _mapper.Map(request.LeaveRequestDto, leaveRequest);
 
                 await _unitOfWork.LeaveRequestRepository.Update(leaveRequest);
@@ -42,6 +45,9 @@ namespace LeaveManagement.Application.Features.LeaveRequests.Handlers.Commands
             else if (request.ChangeLeaveRequestApprovalDto != null)
             {
                 leaveRequest = await _unitOfWork.LeaveRequestRepository.Get(request.ChangeLeaveRequestApprovalDto.Id);
+
+                if (leaveRequest is null)
+                    throw new NotFoundException(nameof(leaveRequest), request.LeaveRequestDto.Id);
 
                 await _unitOfWork.LeaveRequestRepository.ChangeApprovalStatus(leaveRequest, request.ChangeLeaveRequestApprovalDto.Approved);
                 if (request.ChangeLeaveRequestApprovalDto.Approved == true)
