@@ -7,10 +7,9 @@ using System.Threading.Tasks;
 
 namespace LeaveManagement.Persistence
 {
-    public class LeaveManagementDbContext : DbContext
+    public class LeaveManagementDbContext : AuditableDbContext
     {
-        public LeaveManagementDbContext(DbContextOptions<LeaveManagementDbContext> options)
-            : base(options)
+        public LeaveManagementDbContext(DbContextOptions options): base(options)
         {
         }
 
@@ -18,19 +17,6 @@ namespace LeaveManagement.Persistence
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(LeaveManagementDbContext).Assembly);
             base.OnModelCreating(modelBuilder);
-        }
-
-        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-        {
-            foreach (var entry in ChangeTracker.Entries<BaseDomainEntity>())
-            {
-                entry.Entity.LastModifiedDate = DateTime.Now;
-                if (entry.State == EntityState.Added)
-                    entry.Entity.CreatedDate = DateTime.Now;
-
-            }
-
-            return base.SaveChangesAsync(cancellationToken);
         }
 
         public DbSet<LeaveAllocation> LeaveAllocations { get; set; }
